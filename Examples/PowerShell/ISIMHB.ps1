@@ -41,9 +41,10 @@ try
 {
     $webrequest2 = Invoke-WebRequest -Uri $url2 -WebSession $websession -Body $authBody -ContentType $conentType -Method POST
     $StatCode = $webrequest2.StatusCode
-    Write-Host "STATUS CODE: $($StatCode)"
+    Write-Debug "STATUS CODE: $($StatCode)"
     if ($StatCode -eq "200"){
-        Write-Host "Failed"
+        #failed
+        throw "Login Failed"
     }
 }
 catch
@@ -51,12 +52,13 @@ catch
     #Write-Host "Failed"
     $StatusCode = $_.Exception.Response.StatusCode.value__
     if ($StatusCode -eq "404"){
-        Write-Host "Login Success"
+        #success
+        Write-Debug "Login successful"
     } else {
-        Write-Host "Failed with $($StatusCode)"
+        # throw "Failed with $($StatusCode)"
         $StatusStream = $_.Exception.Response.GetResponseStream()
         $sr = New-Object System.IO.StreamReader $StatusStream
         $loginRes = $sr.ReadToEnd()
-        Write-Host "Status Desc: $($loginRes)"
+        throw "Status Code: $($StatusCode)  -- Status Desc: $($loginRes)"
     }
 }  
